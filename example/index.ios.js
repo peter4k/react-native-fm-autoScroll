@@ -5,6 +5,8 @@
 'use strict';
 
 var React = require('react-native');
+var AutoScroll = require('./autoScroll');
+
 var {
     AppRegistry,
     StyleSheet,
@@ -20,21 +22,35 @@ var example = React.createClass({
             text: ""
         }
     },
+    componentWillMount: function () {
+        this.autoScroll = new AutoScroll();
+        this.autoScroll.init(this.refs.scrollView);
+
+    },
     render: function () {
         return (
-                <ScrollView contentContainerStyle={styles.container}>
-                    <Text>
-                        FM AutoScroll will scroll the scroll view / list view to make the textInput above the keyboard
-                    </Text>
-                    <Text style={{marginTop: 150}}>
-                        When this text input is focused, the scroll view will automatically scroll to the correct position:
-                    </Text>
-                    <TextInput
-                        style={styles.input}
-                        value={this.state.text}
-                        onChangeText={(text)=>this.setState({text: text})}
-                        />
-                </ScrollView>
+            <ScrollView
+                contentContainerStyle={styles.container}
+                ref={'scrollView'}
+                scrollEventThrottle={8}
+                onScroll={this.autoScroll.onScroll}
+                >
+                <Text>
+                    FM AutoScroll will scroll the scroll view / list view to make the textInput above the keyboard
+                </Text>
+                <Text style={{marginTop: 150}}>
+                    When this text input is focused, the scroll view will automatically scroll to the correct position:
+                </Text>
+                <TextInput
+                    style={styles.input}
+                    value={this.state.text}
+                    onChangeText={(text)=>this.setState({text: text})}
+                    ref={'input'}
+                    onFocus={()=>{
+                    this.autoScroll.scrollAboveKeyBoard(this.refs.input)
+                    }}
+                    />
+            </ScrollView>
         );
     }
 });
